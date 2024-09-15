@@ -29,8 +29,8 @@ st.markdown("""
     .main .block-container {
         padding-top: 1.5rem;
         padding-bottom: 1rem;
-        padding-left: 1rem;
-        padding-right: 1rem;
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
     }
     h1, h2, h3 {
         font-family: -apple-system, BlinkMacSystemFont, sans-serif;
@@ -76,13 +76,6 @@ st.markdown("""
         border-radius: 10px;
         border: none;
     }
-    .stImage > img {
-    padding: 60px;
-    margin: 60px;
-    width: 480px;
-    height: auto;
-}
-
     @media (max-width: 640px) {
         .main .block-container {
             padding-left: 0.2rem;
@@ -97,8 +90,7 @@ st.markdown("""
 def load_models():
     model1 = tf.keras.models.load_model("./model/keras_Model_2.16.1.h5")
     model2 = tf.keras.models.load_model("./model/mobilenetv2_model_v6.h5")
-    # model3 = tf.keras.models.load_model("./model/mobilenetv2_model_v6.h5")
-    model3 = model2
+    model3 = tf.keras.models.load_model("./model/mobilenetv2_model_v6.h5")
     return model1, model2, model3
 
 # Define class names and weights
@@ -209,16 +201,17 @@ def main():
             if url:
                 response = requests.get(url)
                 img = Image.open(BytesIO(response.content)).convert("RGB")
-            elif uploaded_file:
+            else:
                 img = Image.open(uploaded_file).convert("RGB")
         
-            # Resize the image to a maximum width of 700 pixels while maintaining aspect ratio
+            # Resize the image to a maximum width of 400 pixels while maintaining aspect ratio
             max_width = 700
             ratio = max_width / float(img.size[0])
             height = int((float(img.size[1]) * float(ratio)))
             img = img.resize((max_width, height), Image.Resampling.LANCZOS)
         
             st.image(img, caption="Uploaded Image", use_column_width=True)
+        
             # Add this dictionary to map predicted class to information and Wikipedia links
             class_info = {
                 'Basal Cell Carcinoma': {
@@ -243,18 +236,21 @@ def main():
                 }
             }
 
+            # Modify the code after the prediction is made
             if st.button("Analyze Image"):
                 with st.spinner("Analyzing image... Please wait."):
                     predicted_class, confidence, all_probabilities = combined_predict_skin_cancer(img, model1, model2, model3)
-    
+                
                 st.subheader("Prediction Results")
                 st.markdown(f"**Predicted condition:** {predicted_class}")
                 st.markdown(f"**Confidence:** {confidence:.2f}%")
-    
+                
                 # Add predicted class information and Wikipedia link
                 if predicted_class in class_info:
                     st.markdown(f"**Information about {predicted_class}:** {class_info[predicted_class]['description']}")
                     st.markdown(f"[Learn more on Wikipedia]({class_info[predicted_class]['wiki_link']})")
+
+                # (Keep the rest of the code related to the probabilities graph)
 
             
                 # Create a DataFrame for the probabilities
@@ -296,29 +292,29 @@ def main():
                         'yanchor': 'top',
                         'font': dict(size=16)
                     },
-                    xaxis_title=None,
-                    yaxis_title=None,
-                    height=300,
-                    margin=dict(l=30, r=30, t=60, b=30),
+                    xaxis_title=None,  # Remove x-axis title
+                    yaxis_title=None,  # Remove y-axis title
+                    height=300,  # Reduce height for better mobile view
+                    margin=dict(l=10, r=10, t=40, b=10),  # Tighten margins
                     plot_bgcolor='rgba(0,0,0,0)',
                     paper_bgcolor='rgba(0,0,0,0)',
                     font=dict(color='#FFFFFF' if st.get_option("theme.base") == "dark" else '#000000', size=12),
                     showlegend=False,
-                    bargap=0.2,
+                    bargap=0.2,  # Adjust gap between bars
                 )
 
                 # Update axes
                 fig.update_xaxes(
-                    range=[0, 100],
-                    visible=False,
+                    range=[0, 100],  # Set range from 0 to 100%
+                    visible=False,  # Hide x-axis
                 )
                 fig.update_yaxes(
                     color='#FFFFFF' if st.get_option("theme.base") == "dark" else '#000000',
                     tickfont=dict(size=12),
-                    automargin=True,
+                    automargin=True,  # Automatically adjust margins to fit labels
                 )
 
-                # Display the chart with all interactions disabled
+                # Display the chart
                 st.plotly_chart(fig, use_container_width=True, config={
                     'displayModeBar': False,  # Remove the mode bar (toolbar)
                     'responsive': True,
@@ -328,6 +324,7 @@ def main():
                     'dragmode': False,  # Disable drag functionality
                     'staticPlot': True  # Make the plot static and disable all interactive features
                 })
+
 
                 # Add a legend explaining the color coding
                 st.markdown("""
@@ -370,9 +367,7 @@ def main():
 
         st.header("How to Use")
         st.markdown("""
-        1. Choose one of the following options:
-           - Enter an image URL
-           - Upload an image file
+        1. Enter an image URL or upload an image file.
         2. Click "Analyze Image".
         3. View the prediction results and probability breakdown.
         4. For concerning results, a heatmap will highlight areas of interest.
@@ -382,6 +377,7 @@ def main():
         st.markdown("---")
         st.markdown("### Credits")
         st.markdown("[GitHub](https://github.com/Student408) | [LinkedIn](https://www.linkedin.com/in/ranjanshettigar)")
+
 
 if __name__ == "__main__":
     main()
