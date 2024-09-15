@@ -1,3 +1,10 @@
+import pip
+
+def install_requirements():
+    pip.main(['install', '-r', 'requirements.txt'])
+
+install_requirements()
+
 import streamlit as st
 import tensorflow as tf
 import numpy as np
