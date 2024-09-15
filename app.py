@@ -27,10 +27,10 @@ st.markdown("""
         color: var(--text-color);
     }
     .main .block-container {
-        padding-top: 1rem;
+        padding-top: 1.5rem;
         padding-bottom: 1rem;
-        padding-left: 0.5rem;
-        padding-right: 0.5rem;
+        padding-left: 1rem;
+        padding-right: 1rem;
     }
     h1, h2, h3 {
         font-family: -apple-system, BlinkMacSystemFont, sans-serif;
@@ -76,6 +76,13 @@ st.markdown("""
         border-radius: 10px;
         border: none;
     }
+    .stImage > img {
+    padding: 60px;
+    margin: 60px;
+    width: 480px;
+    height: auto;
+}
+
     @media (max-width: 640px) {
         .main .block-container {
             padding-left: 0.2rem;
@@ -201,24 +208,53 @@ def main():
             if url:
                 response = requests.get(url)
                 img = Image.open(BytesIO(response.content)).convert("RGB")
-            else:
+            elif uploaded_file:
                 img = Image.open(uploaded_file).convert("RGB")
         
-            # Resize the image to a maximum width of 400 pixels while maintaining aspect ratio
+            # Resize the image to a maximum width of 700 pixels while maintaining aspect ratio
             max_width = 700
             ratio = max_width / float(img.size[0])
             height = int((float(img.size[1]) * float(ratio)))
             img = img.resize((max_width, height), Image.Resampling.LANCZOS)
         
             st.image(img, caption="Uploaded Image", use_column_width=True)
-        
+            # Add this dictionary to map predicted class to information and Wikipedia links
+            class_info = {
+                'Basal Cell Carcinoma': {
+                    'description': 'Basal cell carcinoma is a type of skin cancer that begins in the basal cells, which produce new skin cells as old ones die off.',
+                    'wiki_link': 'https://en.wikipedia.org/wiki/Basal-cell_carcinoma'
+                },
+                'Melanoma': {
+                    'description': 'Melanoma is the most serious type of skin cancer that develops in melanocytes, the cells that produce melanin (pigment in the skin).',
+                    'wiki_link': 'https://en.wikipedia.org/wiki/Melanoma'
+                },
+                'Nevus': {
+                    'description': 'A nevus (or mole) is a benign growth of melanocytes. Although generally harmless, some nevi can develop into melanoma.',
+                    'wiki_link': 'https://en.wikipedia.org/wiki/Nevus'
+                },
+                'Benign Keratosis': {
+                    'description': 'Benign keratosis refers to non-cancerous skin growths, typically caused by sun exposure. These are harmless but can resemble cancerous lesions.',
+                    'wiki_link': 'https://en.wikipedia.org/wiki/Seborrheic_keratosis'
+                },
+                'No Cancer': {
+                    'description': 'No signs of cancer were detected in the analyzed image. However, it is important to monitor any changes in your skin and consult a doctor if necessary.',
+                    'wiki_link': 'https://en.wikipedia.org/wiki/Skin_cancer'
+                }
+            }
+
             if st.button("Analyze Image"):
                 with st.spinner("Analyzing image... Please wait."):
                     predicted_class, confidence, all_probabilities = combined_predict_skin_cancer(img, model1, model2, model3)
-            
+    
                 st.subheader("Prediction Results")
                 st.markdown(f"**Predicted condition:** {predicted_class}")
                 st.markdown(f"**Confidence:** {confidence:.2f}%")
+    
+                # Add predicted class information and Wikipedia link
+                if predicted_class in class_info:
+                    st.markdown(f"**Information about {predicted_class}:** {class_info[predicted_class]['description']}")
+                    st.markdown(f"[Learn more on Wikipedia]({class_info[predicted_class]['wiki_link']})")
+
             
                 # Create a DataFrame for the probabilities
                 df = pd.DataFrame({
@@ -259,32 +295,37 @@ def main():
                         'yanchor': 'top',
                         'font': dict(size=16)
                     },
-                    xaxis_title=None,  # Remove x-axis title
-                    yaxis_title=None,  # Remove y-axis title
-                    height=300,  # Reduce height for better mobile view
-                    margin=dict(l=10, r=10, t=40, b=10),  # Tighten margins
+                    xaxis_title=None,
+                    yaxis_title=None,
+                    height=300,
+                    margin=dict(l=30, r=30, t=60, b=30),
                     plot_bgcolor='rgba(0,0,0,0)',
                     paper_bgcolor='rgba(0,0,0,0)',
                     font=dict(color='#FFFFFF' if st.get_option("theme.base") == "dark" else '#000000', size=12),
                     showlegend=False,
-                    bargap=0.2,  # Adjust gap between bars
+                    bargap=0.2,
                 )
 
                 # Update axes
                 fig.update_xaxes(
-                    range=[0, 100],  # Set range from 0 to 100%
-                    visible=False,  # Hide x-axis
+                    range=[0, 100],
+                    visible=False,
                 )
                 fig.update_yaxes(
                     color='#FFFFFF' if st.get_option("theme.base") == "dark" else '#000000',
                     tickfont=dict(size=12),
-                    automargin=True,  # Automatically adjust margins to fit labels
+                    automargin=True,
                 )
 
-                # Display the chart
+                # Display the chart with all interactions disabled
                 st.plotly_chart(fig, use_container_width=True, config={
-                    'displayModeBar': False,  # Hide the mode bar
-                    'responsive': True
+                    'displayModeBar': False,  # Remove the mode bar (toolbar)
+                    'responsive': True,
+                    'scrollZoom': False,  # Disable zooming with scroll
+                    'doubleClick': False,  # Disable resetting the graph on double click
+                    'showTips': False,  # Disable hover tips
+                    'dragmode': False,  # Disable drag functionality
+                    'staticPlot': True  # Make the plot static and disable all interactive features
                 })
 
                 # Add a legend explaining the color coding
@@ -328,12 +369,18 @@ def main():
 
         st.header("How to Use")
         st.markdown("""
-        1. Enter an image URL or upload an image file.
+        1. Choose one of the following options:
+           - Enter an image URL
+           - Upload an image file
         2. Click "Analyze Image".
         3. View the prediction results and probability breakdown.
         4. For concerning results, a heatmap will highlight areas of interest.
         5. Always consult with a healthcare professional for proper diagnosis.
         """)
+
+        st.markdown("---")
+        st.markdown("### Credits")
+        st.markdown("[GitHub](https://github.com/Student408) | [LinkedIn](https://www.linkedin.com/in/ranjanshettigar)")
 
 if __name__ == "__main__":
     main()
