@@ -1,7 +1,16 @@
-import pip
+import importlib
+import subprocess
+import sys
 
 def install_requirements():
-    pip.main(['install', '-r', 'requirements.txt'])
+    try:
+        # Try to import a package (e.g., numpy as a test package)
+        importlib.import_module('numpy')
+        print("Requirements are already installed.")
+    except ImportError:
+        # If the package is not installed, install from requirements.txt
+        print("Installing requirements...")
+        subprocess.check_call([sys.executable, '-m', 'pip', 'install', '-r', 'requirements.txt'])
 
 install_requirements()
 
@@ -90,7 +99,8 @@ st.markdown("""
 def load_models():
     model1 = tf.keras.models.load_model("./model/keras_Model_2.16.1.h5")
     model2 = tf.keras.models.load_model("./model/mobilenetv2_model_v6.h5")
-    model3 = tf.keras.models.load_model("./model/mobilenetv2_model_v6.h5")
+    # model3 = tf.keras.models.load_model("./model/mobilenetv2_model_v6.h5")
+    model3 = model2
     return model1, model2, model3
 
 # Define class names and weights
