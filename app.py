@@ -97,7 +97,8 @@ st.markdown("""
 def load_models():
     model1 = tf.keras.models.load_model("./model/keras_Model_2.16.1.h5")
     model2 = tf.keras.models.load_model("./model/mobilenetv2_model_v6.h5")
-    model3 = tf.keras.models.load_model("./model/mobilenetv2_model_v6.h5")
+    # model3 = tf.keras.models.load_model("./model/mobilenetv2_model_v6.h5")
+    model3 = model2
     return model1, model2, model3
 
 # Define class names and weights
