@@ -36,7 +36,6 @@ st.markdown("""
 # Load models (same as before)
 @st.cache_resource
 def load_models():
-    # model1 = tf.keras.models.load_model("./model/keras_Model_2.16.1.h5")
     model1 = tf.keras.models.load_model("./model/keras_Model_tm4kv2_2.16.1.h5")
     model2 = tf.keras.models.load_model("./model/mobilenetv2_model_v6.h5")
     model3 = model2
@@ -339,8 +338,8 @@ def main():
         - Basal Cell Carcinoma
         - Melanoma
         - Nevus
-        - Benign Keratosis
-        - No Cancer
+        - Benign Keratosis (Seborrheic keratosis)
+        - No Cancer 
 
         **Disclaimer:** This app is for educational purposes only. Always consult a healthcare professional for proper diagnosis and treatment.
         """)
@@ -357,7 +356,7 @@ def main():
 
             st.markdown("---")
             st.markdown("### Credits")
-            st.markdown("[GitHub](https://github.com/Student408/skin_cancer) | [LinkedIn](https://www.linkedin.com/in/ranjanshettigar)")
+            st.markdown("[GitHub](https://github.com/Student408) | [LinkedIn](https://www.linkedin.com/in/ranjanshettigar)")
 
 if __name__ == "__main__":
     main()
