@@ -36,16 +36,17 @@ st.markdown("""
 # Load models (same as before)
 @st.cache_resource
 def load_models():
-    model1 = tf.keras.models.load_model("./model/keras_Model_2.16.1.h5")
+    # model1 = tf.keras.models.load_model("./model/keras_Model_2.16.1.h5")
+    model1 = tf.keras.models.load_model("./model/keras_Model_tm4kv2_2.16.1.h5")
     model2 = tf.keras.models.load_model("./model/mobilenetv2_model_v6.h5")
     model3 = model2
     return model1, model2, model3
 
 # Define class names and weights (same as before)
 class_names = ['Basal Cell Carcinoma', 'Melanoma', 'Nevus', 'Benign Keratosis', 'No Cancer']
-weights_model1 = np.array([0.6, 0.6, 0.6, 0.6, 0.34])
-weights_model2 = np.array([0.2, 0.2, 0.2, 0.2, 0.33])
-weights_model3 = np.array([0.2, 0.2, 0.2, 0.2, 0.33])
+weights_model1 = np.array([0.6, 0.6, 0.6, 0.6, 0.5])
+weights_model2 = np.array([0.2, 0.2, 0.2, 0.2, 0.25])
+weights_model3 = np.array([0.2, 0.2, 0.2, 0.2, 0.25])
 
 # Preprocessing functions (same as before)
 def preprocess_image_model1(img):
