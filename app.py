@@ -29,7 +29,35 @@ st.set_page_config(page_title="Skin Cancer detection", layout="wide", page_icon=
 # Custom CSS (same as before)
 st.markdown("""
 <style>
-    /* Your custom CSS here */
+            .reportview-container {
+        background: var(--background-color);
+        color: var(--text-color);
+    }
+    .main .block-container {
+        padding-top: 1.5rem;
+        padding-bottom: 1rem;
+        
+    }
+    h1, h2, h3 {
+        font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+        font-weight: 600;
+        color: var(--text-color);
+    }
+    h1 {
+        font-size: 1.8rem;
+    }
+    h2 {
+        font-size: 1.4rem;
+    }
+    h3 {
+        font-size: 1.2rem;
+    }
+    @media (max-width: 640px) {
+        .main .block-container {
+            padding-left: 0.2rem;
+            padding-right: 0.2rem;
+        }
+    }
 </style>
 """, unsafe_allow_html=True)
 
