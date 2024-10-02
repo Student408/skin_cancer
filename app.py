@@ -24,7 +24,7 @@ import pandas as pd
 import plotly.graph_objects as go
 
 # Set page config at the very beginning
-st.set_page_config(page_title="Skin Cancer Prediction", layout="wide", page_icon="🩺")
+st.set_page_config(page_title="Skin Cancer detection", layout="wide", page_icon="🩺")
 
 # Custom CSS (same as before)
 st.markdown("""
@@ -151,7 +151,7 @@ class_info = {
 
 # Main Streamlit app
 def main():
-    st.title("Skin Cancer Prediction - Multiple Patients")
+    st.title("Skin Cancer detection and classification")
 
     # Load models
     with st.spinner("Loading models... Please wait."):
