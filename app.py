@@ -383,8 +383,8 @@ def main():
         """)
 
             st.markdown("---")
-            st.markdown("### Credits")
-            st.markdown("[GitHub](https://github.com/Student408) | [LinkedIn](https://www.linkedin.com/in/ranjanshettigar)")
+            st.markdown("### Links")
+            st.markdown("[GitHub](https://github.com/Student408/skin_cancer)")
 
 if __name__ == "__main__":
     main()
