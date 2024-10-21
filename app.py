@@ -360,7 +360,7 @@ def main():
         with st.sidebar:
             st.header("About")
             st.info("""
-            This app uses AI to analyze skin images and predict various conditions, including skin cancer.
+            This app uses deep learning techniques to analyze skin images and predict various conditions, including skin cancer.
 
         It can detect:
         - Basal Cell Carcinoma
