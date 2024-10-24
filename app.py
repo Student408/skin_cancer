@@ -189,7 +189,7 @@ def main():
     st.write("Enter image URLs with patient names (one per line, separated by comma) or upload multiple images.")
 
     # Input for multiple URLs and patient names
-    url_input = st.text_area("", 
+    url_input = st.text_area(
                              placeholder="https://example.com/image1.jpg, John Doe\nhttps://example.com/image2.jpg, Jane Smith")
 
     # File uploader for multiple images
