@@ -9,28 +9,52 @@ jobs:
   sync-to-hub:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      # Check out the repository with LFS fully enabled
+      - name: Checkout repository
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
           lfs: true
       
-      # Install and configure Git LFS
-      - name: Setup Git LFS
+      # Set up Git LFS properly
+      - name: Set up Git LFS
         run: |
           git lfs install
-          git lfs pull
-      
-      # Ensure large files are tracked by Git LFS
-      - name: Track large files with Git LFS
+          
+      # First remove the large file from Git's history if it's already tracked
+      - name: Clean up large files from Git history
         run: |
-          git lfs track "model/*.h5"
-          git add .gitattributes
-          git commit -m "Track large files with Git LFS" || echo "No changes to commit"
+          git rm --cached model/mobilenetv2_model_v6.h5 || echo "File not in git index"
       
-      # Push to Hugging Face Hub
-      - name: Push to hub
+      # Configure Git LFS tracking
+      - name: Configure Git LFS
+        run: |
+          mkdir -p model || echo "Model directory already exists"
+          git lfs track "*.h5"
+          git add .gitattributes
+          git config --global user.email "github-actions@github.com"
+          git config --global user.name "GitHub Actions"
+          git commit -m "Configure Git LFS tracking" || echo "No changes to commit"
+      
+      # Re-add the file through Git LFS
+      - name: Re-add large file through Git LFS
+        run: |
+          # Only attempt to add the file if it exists
+          if [ -f model/mobilenetv2_model_v6.h5 ]; then
+            git lfs track "model/mobilenetv2_model_v6.h5"
+            git add model/mobilenetv2_model_v6.h5
+            git commit -m "Add model file via Git LFS" || echo "No changes to commit"
+          else
+            echo "Model file doesn't exist in the repository at this point"
+          fi
+      
+      # Push to Hugging Face Hub with an explicit Git LFS push first
+      - name: Push to Hugging Face Hub
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: |
           git remote set-url origin https://loko-dev:$HF_TOKEN@huggingface.co/spaces/loko-dev/skin-vision
+          # First push LFS objects
+          git lfs push --all origin main
+          # Then push commits
           git push --force origin main
