@@ -1,20 +1,34 @@
 name: Sync to Hugging Face hub
+
 on:
   push:
     branches: [main]
-
-  # to run this workflow manually from the Actions tab
   workflow_dispatch:
 
 jobs:
   sync-to-hub:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
           lfs: true
-      - name: Push to hub
+
+      - name: Install Git LFS
+        run: |
+          sudo apt-get update && sudo apt-get install git-lfs -y
+          git lfs install
+
+      - name: Track large model file with Git LFS
+        run: |
+          git lfs track "model/mobilenetv2_model_v6.h5"
+          # Add/update .gitattributes file so Git knows about LFS tracking
+          git add .gitattributes
+          # Commit if there are changes (the || clause ignores error if there's nothing to commit)
+          git commit -m "Configure Git LFS for large model file" || echo "No changes to commit"
+
+      - name: Push to Hugging Face hub
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: git push --force https://loko-dev:$HF_TOKEN@huggingface.co/spaces/loko-dev/skin-vision main
